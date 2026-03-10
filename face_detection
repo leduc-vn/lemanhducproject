@@ -1,0 +1,40 @@
+# AI Face Detection Web App
+
+A web application that detects human faces from uploaded images or webcam using AI.
+
+## Tech Stack
+- Laravel (Frontend & Backend)
+- Python Flask (AI API)
+- OpenCV (Face Detection)
+- MySQL
+- JavaScript
+
+## Features
+- Upload image for face detection
+- Webcam capture and detect faces
+- Display bounding boxes around detected faces
+- Save detection history to database
+
+## Architecture
+
+Laravel Web App
+↓
+REST API
+↓
+Flask AI Service
+↓
+OpenCV Face Detection
+
+## How to run
+
+### 1 Run Laravel
+
+php artisan serve
+
+### 2 Run Flask AI
+
+python app.py
+
+### 3 Open browser
+
+http://127.0.0.1:8000
