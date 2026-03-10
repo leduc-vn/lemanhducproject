@@ -1,7 +1,9 @@
 # AI Face Detection Web
 
 A web application that detects human faces from uploaded images or webcam in real-time.
+## Demo
 
+![AI Face Detection Demo](public/demo.png)
 ## Technologies
 
 - Laravel (Backend Web)
