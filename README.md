@@ -1,56 +1,78 @@
 # AI Face Detection Web
 
-A web application that detects human faces from uploaded images or webcam in real-time.
+A web application for detecting faces from uploaded images and webcam frames.
+
 ## Demo
 
 ![AI Face Detection Demo](public/demo.png)
+
 ## Technologies
 
-- Laravel (Backend Web)
+- Laravel (web backend)
 - Python Flask (AI API)
-- OpenCV (Face Detection)
-- MySQL (Database)
-- JavaScript (Webcam capture)
+- OpenCV (face detection)
+- MySQL / SQLite (database)
+- JavaScript (webcam capture)
 
 ## Features
 
 - Upload image and detect faces
-- Webcam realtime face detection
+- Webcam real-time face detection
 - Save detection history
 - Dashboard statistics
 
 ## System Architecture
 
-User (Browser)
-↓
-Laravel Web App
-↓
-Flask AI API
-↓
-OpenCV Face Detection
+Browser -> Laravel Web App -> Flask AI API -> OpenCV
 
-## Installation
+## Setup
 
-### 1. Clone project
+### 1) Clone project
 
+```bash
 git clone https://github.com/leduc-vn/lemanhducproject.git
+cd lemanhducproject
+```
 
-### 2. Run Laravel
+### 2) Laravel setup
 
+```bash
+composer install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate
+```
+
+Update `.env` if needed:
+
+```env
+APP_URL=http://127.0.0.1:8000
+FLASK_API_URL=http://127.0.0.1:5000
+```
+
+### 3) Frontend assets
+
+```bash
+npm install
+npm run dev
+```
+
+### 4) Flask AI API setup
+
+```bash
+cd flask_ai
+pip install -r requirements.txt
+python ai.py
+```
+
+### 5) Run Laravel
+
+In another terminal:
+
+```bash
 php artisan serve
+```
 
-### 3. Run Flask API
+### 6) Open browser
 
-cd flask-ai  
-python app.py
-
-### 4. Open browser
-
-http://127.0.0.1:8000
-
-## Demo
-
-- Upload image face detection
-- Webcam face detection
-- Detection history
-- Dashboard statistics
+`http://127.0.0.1:8000`

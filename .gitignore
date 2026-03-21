@@ -19,6 +19,10 @@
 /storage/*.key
 /storage/pail
 /vendor
+/flask_ai/result.jpg
+/face_detection
+/lovepik-outdoor-embrace-between-mother-and-daughter-picture_501198766.jpg
+/"tải xuống (1).jpg"
 Homestead.json
 Homestead.yaml
 Thumbs.db

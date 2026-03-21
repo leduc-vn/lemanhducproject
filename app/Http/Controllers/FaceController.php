@@ -38,11 +38,13 @@ class FaceController extends Controller
 
         $image = $request->file('image');
 
+        $flaskUrl = rtrim(config('services.flask.url'), '/').'/detect';
+
         $response = Http::attach(
             'image',
             file_get_contents($image),
             $image->getClientOriginalName()
-        )->post('http://127.0.0.1:5000/detect');
+        )->post($flaskUrl);
 
         if(!$response->successful()){
             return back()->with('error','Flask API không phản hồi.');
