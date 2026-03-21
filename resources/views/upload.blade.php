@@ -402,6 +402,13 @@
         <p class="header-sub">Phát hiện khuôn mặt từ ảnh tải lên<br>hoặc qua webcam theo thời gian thực.</p>
     </header>
 
+    @if(session('error'))
+        <div class="message error">
+            <i class="fas fa-triangle-exclamation"></i>
+            <span>{{ session('error') }}</span>
+        </div>
+    @endif
+
     <!-- Upload -->
     <div class="card">
         <div class="card-label">
@@ -467,6 +474,42 @@
     const video      = document.getElementById('video');
     const canvas     = document.getElementById('canvas');
     const uploadArea = document.getElementById('uploadArea');
+    const uploadForm = document.getElementById('uploadForm');
+    const MAX_FILE_SIZE = 10 * 1024 * 1024;
+    const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+
+    function appendMessage(text, type = 'error', container = document.querySelector('.wrapper')) {
+        const msg = document.createElement('div');
+        msg.className = `message ${type}`;
+        msg.dataset.dynamic = 'true';
+        msg.innerHTML = `<i class="fas fa-triangle-exclamation"></i> ${text}`;
+        container.appendChild(msg);
+    }
+
+    function clearMessages() {
+        document.querySelectorAll('.message[data-dynamic="true"]').forEach(el => el.remove());
+    }
+
+    function validateImageFile(file) {
+        if (!file) return false;
+
+        if (!file.type.startsWith('image/')) {
+            appendMessage('File không hợp lệ. Vui lòng chọn ảnh.');
+            return false;
+        }
+
+        if (ACCEPTED_TYPES.length && !ACCEPTED_TYPES.includes(file.type)) {
+            appendMessage('Chỉ hỗ trợ JPG, PNG hoặc WEBP.');
+            return false;
+        }
+
+        if (file.size > MAX_FILE_SIZE) {
+            appendMessage('Ảnh vượt quá 10MB. Vui lòng chọn ảnh nhỏ hơn.');
+            return false;
+        }
+
+        return true;
+    }
 
     uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.style.borderColor = '#ff4d2e'; });
     uploadArea.addEventListener('dragleave', () => { uploadArea.style.borderColor = ''; });
@@ -474,13 +517,24 @@
         e.preventDefault();
         uploadArea.style.borderColor = '';
         const file = e.dataTransfer.files[0];
-        if (file && file.type.startsWith('image/')) {
-            fileInput.files = e.dataTransfer.files;
-            showPreview(file);
-        }
+        clearMessages();
+        if (!validateImageFile(file)) return;
+        fileInput.files = e.dataTransfer.files;
+        showPreview(file);
     });
 
-    fileInput.onchange = e => { if (e.target.files[0]) showPreview(e.target.files[0]); };
+    fileInput.onchange = e => {
+        clearMessages();
+        const file = e.target.files[0];
+        if (!validateImageFile(file)) {
+            fileInput.value = '';
+            uploadBtn.disabled = true;
+            preview.style.display = 'none';
+            preview.removeAttribute('src');
+            return;
+        }
+        showPreview(file);
+    };
 
     function showPreview(file) {
         const reader = new FileReader();
@@ -495,14 +549,17 @@
     let stream = null;
 
     async function startWebcam() {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            appendMessage('Trình duyệt không hỗ trợ webcam.', 'error', captureBtn.parentNode);
+            captureBtn.disabled = true;
+            return;
+        }
+
         try {
             stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
             video.srcObject = stream;
         } catch (err) {
-            const msg = document.createElement('div');
-            msg.className = 'message error';
-            msg.innerHTML = '<i class="fas fa-triangle-exclamation"></i> Không thể mở webcam. Vui lòng cho phép quyền truy cập.';
-            captureBtn.parentNode.insertBefore(msg, captureBtn.nextSibling);
+            appendMessage('Không thể mở webcam. Vui lòng cho phép quyền truy cập.', 'error', captureBtn.parentNode);
             captureBtn.disabled = true;
         }
     }
@@ -547,6 +604,11 @@
         canvas.getContext('2d').drawImage(video, 0, 0);
         canvas.toBlob(blob => { if (blob) sendImage(blob, "webcam_capture.jpg"); }, 'image/jpeg', 0.92);
     };
+
+    uploadForm.addEventListener('submit', () => {
+        uploadBtn.disabled = true;
+        uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...';
+    });
 </script>
 
 </body>
